@@ -4,279 +4,222 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sulagna Barik — Graphic Designer</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@400;600;700;800&family=Share+Tech+Mono&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #080808;
-  --surface: #111111;
-  --surface2: #181818;
-  --border: rgba(255,255,255,0.07);
-  --text: #f0ede8;
-  --muted: #6b6b6b;
-  --accent1: #7c3aed;
-  --accent2: #06b6d4;
-  --accent3: #f59e0b;
-  --accent4: #ec4899;
+:root{
+  --bg:#04040a;
+  --surface:rgba(8,8,18,0.85);
+  --border:rgba(200,180,255,0.10);
+  --text:#f0ede8;
+  --muted:#6b6b7a;
+  --cyber:#b06cff;
+  --cyber2:#e040fb;
+  --cyan:#00e5ff;
+  --pearl:#f0ecff;
+  --gold:#d4af7a;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;}
 body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;}
 
-/* Cursor */
-#cursor{position:fixed;width:12px;height:12px;background:var(--text);border-radius:50%;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);mix-blend-mode:difference;}
-#cursor-ring{position:fixed;width:40px;height:40px;border:1px solid rgba(255,255,255,0.4);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;}
+/* ── WebGL canvas ── */
+#gl{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;}
 
-/* Aurora */
-#aurora-canvas{position:fixed;inset:0;pointer-events:none;z-index:0;}
+/* ── Cursor ── */
+#cursor{position:fixed;width:10px;height:10px;background:#fff;border-radius:50%;pointer-events:none;z-index:10000;transform:translate(-50%,-50%);mix-blend-mode:difference;}
+#cursor-ring{position:fixed;width:36px;height:36px;border:1px solid rgba(176,108,255,0.7);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .3s;}
 
-/* Nav */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:28px 60px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(8,8,8,0.95),transparent);}
-.nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:300;letter-spacing:3px;text-transform:uppercase;color:var(--text);text-decoration:none;}
-.nav-links{display:flex;gap:44px;list-style:none;}
-.nav-links a{font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;}
-.nav-links a:hover{color:var(--text);}
+/* ── Scanline overlay ── */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:2;mix-blend-mode:overlay;}
+
+/* ── Nav ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:24px 60px;display:flex;justify-content:space-between;align-items:center;background:linear-gradient(to bottom,rgba(4,4,10,0.95),transparent);border-bottom:1px solid rgba(176,108,255,0.08);}
+.nav-logo{font-family:'Share Tech Mono',monospace;font-size:18px;letter-spacing:4px;color:var(--pearl);text-decoration:none;text-transform:uppercase;}
+.nav-logo span{color:var(--cyber);}
+.nav-links{display:flex;gap:40px;list-style:none;}
+.nav-links a{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .3s;position:relative;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--cyber);transition:width .3s;}
+.nav-links a:hover{color:var(--pearl);}
+.nav-links a:hover::after{width:100%;}
 section{position:relative;z-index:1;}
 
-/* Hero */
+/* ── Hero ── */
 #hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 60px;overflow:hidden;}
-.hero-eyebrow{font-family:'Syne',sans-serif;font-size:11px;font-weight:600;letter-spacing:4px;text-transform:uppercase;color:var(--accent2);margin-bottom:32px;opacity:0;animation:fadeUp 1s .3s forwards;}
-.hero-name{font-family:'Cormorant Garamond',serif;font-size:clamp(64px,10vw,148px);font-weight:300;line-height:.9;letter-spacing:-2px;opacity:0;animation:fadeUp 1s .5s forwards;}
-.hero-name em{font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(240,237,232,.4);}
-.hero-designation{font-family:'Syne',sans-serif;font-size:clamp(13px,1.5vw,18px);font-weight:400;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:32px;opacity:0;animation:fadeUp 1s .7s forwards;}
-.hero-tagline{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,22px);font-style:italic;color:rgba(240,237,232,.45);margin-top:20px;max-width:480px;opacity:0;animation:fadeUp 1s .9s forwards;}
-.hero-scroll-hint{position:absolute;bottom:40px;left:60px;display:flex;align-items:center;gap:16px;opacity:0;animation:fadeUp 1s 1.3s forwards;}
-.hero-scroll-hint span{font-family:'Syne',sans-serif;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
-.scroll-line{width:50px;height:1px;background:var(--muted);position:relative;overflow:hidden;}
-.scroll-line::after{content:'';position:absolute;left:-100%;top:0;width:100%;height:100%;background:var(--text);animation:lineSlide 2s 2s infinite;}
-@keyframes lineSlide{0%{left:-100%}50%{left:0}100%{left:100%}}
+.hero-tag{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:4px;text-transform:uppercase;color:var(--cyber);margin-bottom:24px;opacity:0;animation:fadeUp 1s .3s forwards;}
+.hero-tag::before{content:'[ ';} .hero-tag::after{content:' ]';}
+.hero-name{font-family:'Cormorant Garamond',serif;font-size:clamp(60px,10vw,145px);font-weight:300;line-height:.88;letter-spacing:-2px;opacity:0;animation:fadeUp 1s .5s forwards;}
+.hero-name em{font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(176,108,255,0.5);}
+.hero-designation{font-family:'Share Tech Mono',monospace;font-size:clamp(12px,1.3vw,16px);letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-top:28px;opacity:0;animation:fadeUp 1s .7s forwards;}
+.hero-tagline{font-family:'Cormorant Garamond',serif;font-size:clamp(16px,2vw,21px);font-style:italic;color:rgba(240,236,255,.45);margin-top:18px;max-width:460px;opacity:0;animation:fadeUp 1s .9s forwards;}
+/* Cyber HUD corners on hero */
+.hud-corner{position:absolute;width:40px;height:40px;border-color:rgba(176,108,255,0.3);border-style:solid;border-width:0;opacity:0;animation:fadeIn 1s 1.4s forwards;}
+.hud-tl{top:100px;left:60px;border-top-width:1px;border-left-width:1px;}
+.hud-tr{top:100px;right:60px;border-top-width:1px;border-right-width:1px;}
+.hud-bl{bottom:80px;left:60px;border-bottom-width:1px;border-left-width:1px;}
+.hud-br{bottom:80px;right:60px;border-bottom-width:1px;border-right-width:1px;}
+.hero-status{position:absolute;bottom:44px;left:60px;display:flex;align-items:center;gap:20px;opacity:0;animation:fadeUp 1s 1.2s forwards;}
+.hero-status-dot{width:6px;height:6px;border-radius:50%;background:var(--cyber);box-shadow:0 0 10px var(--cyber);animation:blink 2s infinite;}
+.hero-status span{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-/* Marquee */
-.marquee-wrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:20px 0;background:var(--bg);position:relative;z-index:1;}
-.marquee-track{display:flex;gap:80px;animation:marquee 18s linear infinite;width:max-content;}
-.marquee-item{font-family:'Cormorant Garamond',serif;font-size:28px;font-style:italic;color:var(--muted);white-space:nowrap;flex-shrink:0;}
-.marquee-item span{color:var(--accent1);margin-right:80px;}
+/* ── Marquee ── */
+.marquee-wrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:16px 0;background:rgba(4,4,10,0.7);backdrop-filter:blur(10px);position:relative;z-index:1;}
+.marquee-track{display:flex;gap:60px;animation:marquee 20s linear infinite;width:max-content;}
+.marquee-item{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);white-space:nowrap;flex-shrink:0;}
+.marquee-item span{color:var(--cyber);margin-right:60px;}
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* About */
-#about{padding:140px 60px;display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center;}
-.about-label{font-family:'Syne',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent4);margin-bottom:28px;}
-.about-heading{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,58px);font-weight:300;line-height:1.15;margin-bottom:32px;}
-.about-body{font-size:15px;line-height:1.9;color:rgba(240,237,232,.6);margin-bottom:24px;}
-.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:48px;}
-.stat-item{border-left:1px solid var(--border);padding-left:24px;}
-.stat-num{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;line-height:1;}
-.stat-label{font-family:'Syne',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:8px;}
-.about-card{background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:40px;position:relative;}
-.about-card p{font-family:'Cormorant Garamond',serif;font-size:22px;font-style:italic;line-height:1.7;color:rgba(240,237,232,.7);}
-.about-card cite{display:block;font-family:'Syne',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--accent2);margin-top:24px;font-style:normal;}
-.floating-badge{position:absolute;top:-24px;right:-24px;width:90px;height:90px;border-radius:50%;background:var(--surface2);border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation:rotateBadge 12s linear infinite;}
-.floating-badge span:first-child{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;color:var(--accent3);line-height:1;}
-.floating-badge span:last-child{font-family:'Syne',sans-serif;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+/* ── Shared section style ── */
+.section-bg{background:rgba(4,4,10,0.75);backdrop-filter:blur(12px);}
+.section-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--cyber);margin-bottom:14px;}
+.section-label::before{content:'// ';}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,4vw,54px);font-weight:300;line-height:1.1;}
+.section-header{margin-bottom:64px;}
+
+/* ── About ── */
+#about{padding:130px 60px;display:grid;grid-template-columns:1fr 1fr;gap:90px;align-items:center;background:rgba(4,4,10,0.72);backdrop-filter:blur(12px);}
+.about-heading{font-family:'Cormorant Garamond',serif;font-size:clamp(34px,4vw,56px);font-weight:300;line-height:1.15;margin-bottom:28px;}
+.about-body{font-size:14px;line-height:1.95;color:rgba(240,236,255,.55);margin-bottom:20px;}
+.about-stats{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:40px;}
+.stat-item{border-left:1px solid rgba(176,108,255,0.2);padding-left:20px;position:relative;}
+.stat-item::before{content:'';position:absolute;top:0;left:-1px;width:1px;height:0;background:var(--cyber);animation:statLine 1s 1.5s forwards;}
+@keyframes statLine{to{height:100%;}}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:46px;font-weight:300;line-height:1;color:var(--pearl);}
+.stat-label{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.about-card{background:rgba(12,8,28,0.9);border:1px solid rgba(176,108,255,0.15);border-radius:2px;padding:36px;position:relative;backdrop-filter:blur(10px);}
+.about-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyber),transparent);}
+.about-card p{font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;line-height:1.75;color:rgba(240,236,255,.65);}
+.about-card cite{display:block;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--cyber);margin-top:20px;font-style:normal;}
+.cyber-badge{position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(12,8,28,0.95);border:1px solid rgba(176,108,255,0.25);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;animation:rotateBadge 14s linear infinite;}
+.cyber-badge span:first-child{font-size:24px;line-height:1;}
+.cyber-badge span:last-child{font-family:'Share Tech Mono',monospace;font-size:7px;letter-spacing:1px;color:var(--muted);}
 @keyframes rotateBadge{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
 
-/* Tools */
-#tools{padding:120px 60px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.section-header{margin-bottom:72px;}
-.section-label{font-family:'Syne',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent1);margin-bottom:16px;}
-.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(36px,4vw,56px);font-weight:300;line-height:1.1;}
-.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
-.tool-card{background:var(--bg);padding:44px 40px;border:1px solid var(--border);position:relative;overflow:hidden;transition:border-color .4s;}
-.tool-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--ac,var(--accent1)) 0%,transparent 60%);opacity:0;transition:opacity .4s;}
-.tool-card:hover::before{opacity:.08;}
-.tool-card:hover{border-color:rgba(255,255,255,.15);}
-.tool-icon{font-size:36px;margin-bottom:20px;display:block;}
-.tool-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;letter-spacing:1px;margin-bottom:10px;}
-.tool-desc{font-size:13px;color:var(--muted);line-height:1.7;}
-.tool-level{position:absolute;top:44px;right:40px;font-family:'Syne',sans-serif;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ac,var(--accent2));}
+/* ── Tools ── */
+#tools{padding:110px 60px;background:rgba(4,4,10,0.8);backdrop-filter:blur(12px);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(176,108,255,0.06);}
+.tool-card{background:rgba(8,5,20,0.92);padding:36px 32px;position:relative;overflow:hidden;transition:background .4s;border:1px solid transparent;transition:border-color .4s;}
+.tool-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--ac,var(--cyber)) 0%,transparent 55%);opacity:0;transition:opacity .4s;}
+.tool-card:hover::before{opacity:.07;}
+.tool-card:hover{border-color:rgba(176,108,255,0.2);}
+/* corner accent */
+.tool-card::after{content:'';position:absolute;bottom:0;right:0;width:20px;height:20px;border-bottom:1px solid var(--ac,rgba(176,108,255,0.3));border-right:1px solid var(--ac,rgba(176,108,255,0.3));opacity:.4;}
+.tool-icon{font-size:28px;margin-bottom:16px;display:block;}
+.tool-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;letter-spacing:1px;margin-bottom:8px;color:var(--pearl);}
+.tool-desc{font-size:12px;color:var(--muted);line-height:1.7;}
+.tool-level{position:absolute;top:36px;right:32px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--ac,var(--cyber));opacity:.8;}
+.tool-line{position:absolute;bottom:0;left:0;height:1px;width:0;background:var(--ac,var(--cyber));transition:width .5s;}
+.tool-card:hover .tool-line{width:100%;}
 
-/* ══════════════════════════════════════
-   BRANCH & LEAF SPRING PROJECTS
-══════════════════════════════════════ */
-#projects{padding:120px 0 160px 0;position:relative;}
-.projects-header{padding:0 60px;margin-bottom:100px;}
+/* ══ BRANCH + LEAF PROJECTS (5 projects) ══ */
+#projects{padding:110px 0 140px;position:relative;}
+.projects-header{padding:0 60px;margin-bottom:90px;}
+#branch-scroll{position:relative;height:calc(5 * 80vh + 100vh);}
+#branch-sticky{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+#branch-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
 
-/* The tall scroll container */
-#branch-scroll{
-  position:relative;
-  /* 15 projects × 70vh each */
-  height:calc(15 * 70vh + 100vh);
-}
-
-/* Sticky frame */
-#branch-sticky{
-  position:sticky;
-  top:0;
-  height:100vh;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* SVG branch spine */
-#branch-svg{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  pointer-events:none;
-  z-index:1;
-}
-
-/* Progress counter */
 .branch-counter{
-  position:absolute;
-  top:36px;right:60px;
-  font-family:'Cormorant Garamond',serif;
-  font-size:16px;color:var(--muted);
-  z-index:20;letter-spacing:2px;
+  position:absolute;top:32px;right:60px;
+  font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);
+  z-index:20;letter-spacing:3px;
 }
-.branch-counter strong{font-size:34px;color:var(--text);font-weight:300;}
+.branch-counter strong{font-size:28px;color:var(--pearl);font-weight:400;}
 
-/* Each leaf-card */
+/* Cyber leaf card */
 .leaf-card{
   position:absolute;
-  width:340px;
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:4px;
-  padding:32px 28px;
-  transition:opacity .5s ease, transform .5s cubic-bezier(.23,1,.32,1), border-color .4s, box-shadow .4s;
+  width:360px;
+  background:rgba(8,5,22,0.94);
+  border:1px solid rgba(176,108,255,0.15);
+  padding:0;
+  transition:opacity .55s ease, transform .55s cubic-bezier(.23,1,.32,1), border-color .4s, box-shadow .4s;
   will-change:transform,opacity;
   z-index:5;
+  backdrop-filter:blur(10px);
+  clip-path:polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
 }
-/* Right side default */
-.leaf-card.side-right{
-  left:calc(50% + 60px);
-  transform-origin:left center;
-}
-/* Left side */
-.leaf-card.side-left{
-  right:calc(50% + 60px);
-  left:auto;
-  transform-origin:right center;
-  text-align:right;
-}
+.leaf-card.side-right{left:calc(50% + 60px);transform-origin:left center;}
+.leaf-card.side-left{right:calc(50% + 60px);left:auto;transform-origin:right center;}
+.leaf-card.dim{opacity:.15;transform:scale(.84);border-color:transparent;box-shadow:none;}
+.leaf-card.active{opacity:1;transform:scale(1);border-color:var(--leaf-accent,var(--cyber));box-shadow:0 0 50px -10px var(--leaf-accent,var(--cyber)),inset 0 0 30px -20px var(--leaf-accent,var(--cyber));}
+.leaf-card.past{opacity:.07;transform:scale(.76) translateY(-28px);}
 
-/* DIM state */
-.leaf-card.dim{
-  opacity:.22;
-  transform:scale(.88);
-  border-color:transparent;
-  box-shadow:none;
-}
-/* ACTIVE state */
-.leaf-card.active{
-  opacity:1;
-  transform:scale(1) translateX(0);
-  border-color:var(--leaf-accent,var(--accent2));
-  box-shadow:0 0 60px -10px var(--leaf-accent,var(--accent2));
-}
-/* PAST state (faded above) */
-.leaf-card.past{
-  opacity:.1;
-  transform:scale(.8) translateY(-20px);
-}
+/* card top accent bar */
+.leaf-card-bar{height:2px;background:linear-gradient(90deg,var(--leaf-accent,var(--cyber)),transparent);width:100%;}
+.leaf-card-body{padding:28px 26px;}
+.leaf-num{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);margin-bottom:10px;}
+.leaf-tag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--leaf-accent,var(--cyber));margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.leaf-tag::before{content:'';width:20px;height:1px;background:var(--leaf-accent,var(--cyber));}
+.leaf-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;line-height:1.2;margin-bottom:12px;color:var(--pearl);}
+.leaf-desc{font-size:12px;color:rgba(200,190,255,.45);line-height:1.8;margin-bottom:18px;}
+.leaf-footer{display:flex;justify-content:space-between;align-items:center;}
+.leaf-year{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);}
+.leaf-status{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--leaf-accent,var(--cyber));opacity:.7;}
+/* corner cut indicator */
+.leaf-card-corner{position:absolute;top:0;right:0;width:16px;height:16px;background:var(--leaf-accent,var(--cyber));opacity:.25;clip-path:polygon(100% 0,0 0,100% 100%);}
 
-.leaf-num{
-  font-family:'Cormorant Garamond',serif;
-  font-size:52px;font-weight:300;line-height:1;
-  color:rgba(255,255,255,.05);
-  position:absolute;top:16px;
-}
-.side-right .leaf-num{right:20px;}
-.side-left .leaf-num{left:20px;}
+/* Stem */
+.stem-dot{position:absolute;width:8px;height:8px;border-radius:50%;background:var(--leaf-accent,var(--cyber));z-index:10;box-shadow:0 0 12px 3px var(--leaf-accent,var(--cyber));opacity:.2;transition:opacity .5s,box-shadow .5s;}
+.stem-dot.active{opacity:1;box-shadow:0 0 20px 6px var(--leaf-accent,var(--cyber));}
+.stem-line{position:absolute;height:1px;z-index:4;opacity:.12;transition:opacity .5s;}
+.stem-line.active{opacity:.8;}
 
-.leaf-tag{font-family:'Syne',sans-serif;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--leaf-accent,var(--accent2));margin-bottom:12px;}
-.leaf-title{font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:400;line-height:1.25;margin-bottom:10px;}
-.leaf-desc{font-size:12px;color:rgba(240,237,232,.5);line-height:1.75;margin-bottom:20px;}
-.leaf-year{font-family:'Syne',sans-serif;font-size:10px;letter-spacing:2px;color:var(--muted);}
-
-/* Connector dot on the stem */
-.stem-dot{
-  position:absolute;
-  width:10px;height:10px;
-  border-radius:50%;
-  background:var(--leaf-accent,var(--accent2));
-  left:50%;transform:translateX(-50%);
-  z-index:10;
-  box-shadow:0 0 14px 4px var(--leaf-accent,var(--accent2));
-  transition:opacity .5s;
-  opacity:.3;
-}
-.stem-dot.active{opacity:1;}
-
-/* Connector line from dot to card */
-.stem-line{
-  position:absolute;
-  height:1px;
-  top:50%;
-  z-index:4;
-  transition:opacity .5s,background .5s;
-  opacity:.15;
-}
-.stem-line.side-right{left:50%;transform-origin:left center;}
-.stem-line.side-left{right:50%;left:auto;transform-origin:right center;}
-.stem-line.active{opacity:.7;}
-
-/* Services */
-#services{padding:120px 60px;background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
-.services-list{margin-top:72px;}
-.service-row{display:grid;grid-template-columns:60px 1fr 1fr auto;gap:40px;align-items:center;padding:36px 0;border-bottom:1px solid var(--border);transition:padding-left .4s;}
+/* ── Services ── */
+#services{padding:110px 60px;background:rgba(4,4,10,0.8);backdrop-filter:blur(12px);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.services-list{margin-top:64px;}
+.service-row{display:grid;grid-template-columns:56px 1fr 1fr auto;gap:36px;align-items:center;padding:32px 0;border-bottom:1px solid var(--border);transition:padding-left .4s,border-color .3s;position:relative;}
 .service-row:first-child{border-top:1px solid var(--border);}
-.service-row:hover{padding-left:24px;}
-.service-num{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:300;color:var(--muted);}
-.service-name{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:400;line-height:1;}
-.service-desc{font-size:14px;color:var(--muted);line-height:1.7;}
-.service-arrow{font-size:22px;color:var(--muted);transition:transform .3s,color .3s;}
-.service-row:hover .service-arrow{transform:rotate(-45deg);color:var(--text);}
+.service-row:hover{padding-left:20px;border-color:rgba(176,108,255,0.2);}
+.service-num{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--cyber);letter-spacing:2px;}
+.service-name{font-family:'Cormorant Garamond',serif;font-size:30px;font-weight:400;line-height:1;color:var(--pearl);}
+.service-desc{font-size:13px;color:var(--muted);line-height:1.7;}
+.service-arrow{font-family:'Share Tech Mono',monospace;font-size:18px;color:var(--muted);transition:transform .3s,color .3s;}
+.service-row:hover .service-arrow{transform:rotate(-45deg);color:var(--cyber);}
 
-/* Contact */
-#contact{padding:160px 60px;text-align:center;}
-.contact-eyebrow{font-family:'Syne',sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--accent3);margin-bottom:28px;}
-.contact-heading{font-family:'Cormorant Garamond',serif;font-size:clamp(52px,8vw,120px);font-weight:300;line-height:1;margin-bottom:56px;}
-.contact-heading em{font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(240,237,232,.35);}
-.contact-links{display:flex;justify-content:center;gap:40px;flex-wrap:wrap;margin-bottom:80px;}
-.contact-link{font-family:'Syne',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);text-decoration:none;padding-bottom:4px;border-bottom:1px solid transparent;transition:color .3s,border-color .3s;}
-.contact-link:hover{color:var(--text);border-color:var(--text);}
-.cta-btn{display:inline-block;padding:20px 60px;border:1px solid rgba(255,255,255,.3);font-family:'Syne',sans-serif;font-size:13px;letter-spacing:4px;text-transform:uppercase;color:var(--text);text-decoration:none;position:relative;overflow:hidden;transition:color .4s;}
-.cta-btn::before{content:'';position:absolute;inset:0;background:var(--text);transform:translateX(-101%);transition:transform .4s cubic-bezier(.23,1,.32,1);}
+/* ── Contact ── */
+#contact{padding:150px 60px;text-align:center;background:rgba(4,4,10,0.6);}
+.contact-eyebrow{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--cyber);margin-bottom:24px;}
+.contact-eyebrow::before{content:'// '}
+.contact-heading{font-family:'Cormorant Garamond',serif;font-size:clamp(50px,8vw,115px);font-weight:300;line-height:1;margin-bottom:50px;}
+.contact-heading em{font-style:italic;color:transparent;-webkit-text-stroke:1px rgba(176,108,255,.4);}
+.contact-links{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;margin-bottom:70px;}
+.contact-link{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);text-decoration:none;padding-bottom:4px;border-bottom:1px solid transparent;transition:color .3s,border-color .3s;}
+.contact-link:hover{color:var(--pearl);border-color:var(--cyber);}
+.cta-btn{display:inline-block;padding:18px 54px;border:1px solid rgba(176,108,255,.35);font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:4px;text-transform:uppercase;color:var(--pearl);text-decoration:none;position:relative;overflow:hidden;transition:color .4s;clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));}
+.cta-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,var(--cyber),var(--cyber2));transform:translateX(-101%);transition:transform .4s cubic-bezier(.23,1,.32,1);}
 .cta-btn:hover::before{transform:translateX(0);}
-.cta-btn:hover{color:var(--bg);}
+.cta-btn:hover{color:#000;}
 .cta-btn span{position:relative;z-index:1;}
 
-footer{padding:40px 60px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;}
-footer p{font-family:'Syne',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+footer{padding:36px 60px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;position:relative;z-index:1;background:rgba(4,4,10,0.9);}
+footer p{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:translateY(0)}}
-.reveal{opacity:0;transform:translateY(40px);transition:opacity .9s cubic-bezier(.23,1,.32,1),transform .9s cubic-bezier(.23,1,.32,1);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.reveal{opacity:0;transform:translateY(36px);transition:opacity .9s cubic-bezier(.23,1,.32,1),transform .9s cubic-bezier(.23,1,.32,1);}
 .reveal.visible{opacity:1;transform:none;}
-.reveal-delay-1{transition-delay:.1s;}
-.reveal-delay-2{transition-delay:.2s;}
-.reveal-delay-3{transition-delay:.3s;}
+.reveal-delay-1{transition-delay:.1s;}.reveal-delay-2{transition-delay:.2s;}.reveal-delay-3{transition-delay:.3s;}
 
 @media(max-width:900px){
-  nav{padding:24px 28px;}.nav-links{gap:20px;}
-  #hero,#about,.projects-header,#services,#contact,footer{padding-left:28px;padding-right:28px;}
-  #about{grid-template-columns:1fr;gap:60px;}
+  nav{padding:20px 24px;}.nav-links{gap:20px;}
+  #hero,#about,.projects-header,#services,#contact,footer{padding-left:24px;padding-right:24px;}
+  #about{grid-template-columns:1fr;gap:56px;}
   .tools-grid{grid-template-columns:1fr 1fr;}
   .leaf-card{width:200px;}
   .service-row{grid-template-columns:40px 1fr;}.service-desc,.service-arrow{display:none;}
+  .hud-tr,.hud-br{right:24px;}.hud-tl,.hud-bl{left:24px;}
 }
-@media(max-width:600px){
-  .tools-grid{grid-template-columns:1fr;}
-  .about-stats{grid-template-columns:1fr;}
-  .leaf-card{width:160px;}
-}</style>
+@media(max-width:600px){.tools-grid{grid-template-columns:1fr;}.about-stats{grid-template-columns:1fr;}.leaf-card{width:160px;}}
+</style>
 </head>
 <body>
 
-<canvas id="aurora-canvas"></canvas>
+<canvas id="gl"></canvas>
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
 
 <nav>
-  <a class="nav-logo" href="#">SB</a>
+  <a class="nav-logo" href="#"><span>S</span>B_DESIGN</a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#tools">Tools</a></li>
@@ -287,52 +230,56 @@ footer p{font-family:'Syne',sans-serif;font-size:11px;letter-spacing:2px;text-tr
 </nav>
 
 <section id="hero">
-  <div class="hero-eyebrow">Open to opportunities &amp; collaborations</div>
+  <div class="hud-corner hud-tl"></div>
+  <div class="hud-corner hud-tr"></div>
+  <div class="hud-corner hud-bl"></div>
+  <div class="hud-corner hud-br"></div>
+  <div class="hero-tag">Graphic Designer — 2025</div>
   <h1 class="hero-name">Sulagna<br><em>Barik.</em></h1>
-  <p class="hero-designation">Graphic Designer</p>
+  <p class="hero-designation">Visual Identity · Print · Motion · UI</p>
   <p class="hero-tagline">Crafting visual identities that breathe, move, and endure.</p>
-  <div class="hero-scroll-hint">
-    <div class="scroll-line"></div>
-    <span>Scroll to explore</span>
+  <div class="hero-status">
+    <div class="hero-status-dot"></div>
+    <span>Available for opportunities</span>
   </div>
 </section>
 
 <div class="marquee-wrap">
   <div class="marquee-track">
-    <span class="marquee-item">Brand Identity <span>✦</span></span>
-    <span class="marquee-item">Motion Design <span>✦</span></span>
-    <span class="marquee-item">Print &amp; Editorial <span>✦</span></span>
-    <span class="marquee-item">UI/UX Design <span>✦</span></span>
-    <span class="marquee-item">Visual Storytelling <span>✦</span></span>
-    <span class="marquee-item">Illustration <span>✦</span></span>
-    <span class="marquee-item">Brand Identity <span>✦</span></span>
-    <span class="marquee-item">Motion Design <span>✦</span></span>
-    <span class="marquee-item">Print &amp; Editorial <span>✦</span></span>
-    <span class="marquee-item">UI/UX Design <span>✦</span></span>
-    <span class="marquee-item">Visual Storytelling <span>✦</span></span>
-    <span class="marquee-item">Illustration <span>✦</span></span>
+    <span class="marquee-item">Brand Identity <span>//</span></span>
+    <span class="marquee-item">Motion Design <span>//</span></span>
+    <span class="marquee-item">Print &amp; Editorial <span>//</span></span>
+    <span class="marquee-item">UI/UX Design <span>//</span></span>
+    <span class="marquee-item">Visual Storytelling <span>//</span></span>
+    <span class="marquee-item">Illustration <span>//</span></span>
+    <span class="marquee-item">Brand Identity <span>//</span></span>
+    <span class="marquee-item">Motion Design <span>//</span></span>
+    <span class="marquee-item">Print &amp; Editorial <span>//</span></span>
+    <span class="marquee-item">UI/UX Design <span>//</span></span>
+    <span class="marquee-item">Visual Storytelling <span>//</span></span>
+    <span class="marquee-item">Illustration <span>//</span></span>
   </div>
 </div>
 
 <section id="about">
   <div>
-    <p class="about-label reveal">About Me</p>
-    <h2 class="about-heading reveal">Designing with<br><em style="font-style:italic;color:rgba(240,237,232,.5);">intention</em><br>and precision.</h2>
+    <p class="section-label reveal">About Me</p>
+    <h2 class="about-heading reveal">Designing with<br><em style="font-style:italic;color:rgba(176,108,255,.45);">intention</em><br>and precision.</h2>
     <p class="about-body reveal">I'm Sulagna Barik — a passionate Graphic Designer at the start of my journey, with a sharp eye for aesthetics and a deep love for visual communication. Fresh and driven, I bring new energy to every project I touch.</p>
     <p class="about-body reveal">From bold brand identities to intricate layouts, I craft designs that tell stories and leave lasting impressions. Every pixel has purpose. Every curve has meaning.</p>
     <div class="about-stats reveal">
       <div class="stat-item"><div class="stat-num">Fresh</div><div class="stat-label">Graduate</div></div>
       <div class="stat-item"><div class="stat-num">7+</div><div class="stat-label">Tools Mastered</div></div>
-      <div class="stat-item"><div class="stat-num">15+</div><div class="stat-label">Projects Done</div></div>
+      <div class="stat-item"><div class="stat-num">5</div><div class="stat-label">Projects Done</div></div>
       <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Creative Drive</div></div>
     </div>
   </div>
   <div class="reveal">
     <div class="about-card">
       <p>"Design is not just what it looks like and feels like. Design is how it works — and how it makes you feel."</p>
-      <cite>— My design philosophy</cite>
+      <cite>// My design philosophy</cite>
     </div>
-    <div class="floating-badge"><span>✦</span><span>Creative</span></div>
+    <div class="cyber-badge"><span>✦</span><span>CREATIVE</span></div>
   </div>
 </section>
 
@@ -342,35 +289,28 @@ footer p{font-family:'Syne',sans-serif;font-size:11px;letter-spacing:2px;text-tr
     <h2 class="section-title">Tools &amp;<br>Software</h2>
   </div>
   <div class="tools-grid">
-    <div class="tool-card reveal reveal-delay-1" style="--ac:#31a8ff"><span class="tool-icon">🎨</span><span class="tool-level">Proficient</span><div class="tool-name">Photoshop</div><div class="tool-desc">Photo editing, compositing, and digital art creation with pixel-perfect precision.</div></div>
-    <div class="tool-card reveal reveal-delay-2" style="--ac:#00c4cc"><span class="tool-icon">🖌️</span><span class="tool-level">Proficient</span><div class="tool-name">Canva</div><div class="tool-desc">Rapid visual content creation for social media, presentations, and marketing materials.</div></div>
-    <div class="tool-card reveal reveal-delay-3" style="--ac:#ff9a00"><span class="tool-icon">✏️</span><span class="tool-level">Proficient</span><div class="tool-name">Illustrator</div><div class="tool-desc">Vector illustration and logo design with infinite scalability and precision.</div></div>
-    <div class="tool-card reveal reveal-delay-1" style="--ac:#00b140"><span class="tool-icon">🖊️</span><span class="tool-level">Proficient</span><div class="tool-name">CorelDRAW</div><div class="tool-desc">Professional vector graphics and page layout for complex design projects.</div></div>
-    <div class="tool-card reveal reveal-delay-2" style="--ac:#9999ff"><span class="tool-icon">🎬</span><span class="tool-level">Learning</span><div class="tool-name">After Effects</div><div class="tool-desc">Motion graphics, visual effects, and dynamic animation for compelling storytelling.</div></div>
-    <div class="tool-card reveal reveal-delay-3" style="--ac:#f24e1e"><span class="tool-icon">🔲</span><span class="tool-level">Proficient</span><div class="tool-name">Figma</div><div class="tool-desc">UI/UX design, prototyping, and collaborative design systems.</div></div>
-    <div class="tool-card reveal" style="--ac:#ff3366;grid-column:1/-1"><span class="tool-icon">📐</span><span class="tool-level">Proficient</span><div class="tool-name">InDesign</div><div class="tool-desc">Professional desktop publishing for magazines, brochures, books, and editorial design — mastering layout and typography at the highest level.</div></div>
+    <div class="tool-card reveal reveal-delay-1" style="--ac:#31a8ff"><div class="tool-line"></div><span class="tool-icon">🎨</span><span class="tool-level">Proficient</span><div class="tool-name">Photoshop</div><div class="tool-desc">Photo editing, compositing, and digital art creation with pixel-perfect precision.</div></div>
+    <div class="tool-card reveal reveal-delay-2" style="--ac:#00c4cc"><div class="tool-line"></div><span class="tool-icon">🖌️</span><span class="tool-level">Proficient</span><div class="tool-name">Canva</div><div class="tool-desc">Rapid visual content creation for social media, presentations, and marketing materials.</div></div>
+    <div class="tool-card reveal reveal-delay-3" style="--ac:#ff9a00"><div class="tool-line"></div><span class="tool-icon">✏️</span><span class="tool-level">Proficient</span><div class="tool-name">Illustrator</div><div class="tool-desc">Vector illustration and logo design with infinite scalability and precision.</div></div>
+    <div class="tool-card reveal reveal-delay-1" style="--ac:#00e676"><div class="tool-line"></div><span class="tool-icon">🖊️</span><span class="tool-level">Proficient</span><div class="tool-name">CorelDRAW</div><div class="tool-desc">Professional vector graphics and page layout for complex design projects.</div></div>
+    <div class="tool-card reveal reveal-delay-2" style="--ac:#b06cff"><div class="tool-line"></div><span class="tool-icon">🎬</span><span class="tool-level">Learning</span><div class="tool-name">After Effects</div><div class="tool-desc">Motion graphics, visual effects, and dynamic animation for compelling storytelling.</div></div>
+    <div class="tool-card reveal reveal-delay-3" style="--ac:#f24e1e"><div class="tool-line"></div><span class="tool-icon">🔲</span><span class="tool-level">Proficient</span><div class="tool-name">Figma</div><div class="tool-desc">UI/UX design, prototyping, and collaborative design systems.</div></div>
+    <div class="tool-card reveal" style="--ac:#e040fb;grid-column:1/-1"><div class="tool-line"></div><span class="tool-icon">📐</span><span class="tool-level">Proficient</span><div class="tool-name">InDesign</div><div class="tool-desc">Professional desktop publishing for magazines, brochures, books, and editorial design — mastering layout and typography at the highest level.</div></div>
   </div>
 </section>
 
-<!-- ══ BRANCH + LEAF PROJECTS ══ -->
+<!-- ══ BRANCH PROJECTS — 5 cards ══ -->
 <section id="projects">
   <div class="projects-header">
     <p class="section-label reveal">Selected Work</p>
     <h2 class="section-title reveal">Projects</h2>
-    <p class="about-body reveal" style="margin-top:16px;max-width:480px;">Scroll down the branch — each project lights up as it comes into focus.</p>
+    <p class="about-body reveal" style="margin-top:14px;max-width:460px;font-size:13px;">Scroll down the branch — each project illuminates as it comes into focus.</p>
   </div>
-
   <div id="branch-scroll">
     <div id="branch-sticky">
-
-      <!-- SVG stem drawn by JS -->
-      <svg id="branch-svg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice"></svg>
-
-      <div class="branch-counter"><strong id="leaf-current">01</strong> / 15</div>
-
-      <!-- Cards + dots injected by JS -->
+      <svg id="branch-svg"></svg>
+      <div class="branch-counter"><strong id="leaf-current">01</strong>&nbsp;/&nbsp;05</div>
       <div id="branch-mount"></div>
-
     </div>
   </div>
 </section>
@@ -380,8 +320,8 @@ footer p{font-family:'Syne',sans-serif;font-size:11px;letter-spacing:2px;text-tr
   <div class="services-list">
     <div class="service-row reveal"><span class="service-num">01</span><span class="service-name">Brand Identity Design</span><span class="service-desc">Logos, color systems, typography, and complete visual identity packages.</span><span class="service-arrow">→</span></div>
     <div class="service-row reveal reveal-delay-1"><span class="service-num">02</span><span class="service-name">Print &amp; Editorial</span><span class="service-desc">Magazines, brochures, books, posters, and packaging designed to be experienced.</span><span class="service-arrow">→</span></div>
-    <div class="service-row reveal reveal-delay-2"><span class="service-num">03</span><span class="service-name">Motion Graphics</span><span class="service-desc">Animated logos, explainer videos, social content, and cinematic title sequences.</span><span class="service-arrow">→</span></div>
-    <div class="service-row reveal reveal-delay-3"><span class="service-num">04</span><span class="service-name">UI/UX &amp; Digital Design</span><span class="service-desc">Intuitive interfaces, interactive prototypes, and seamless digital experiences.</span><span class="service-arrow">→</span></div>
+    <div class="service-row reveal reveal-delay-2"><span class="service-num">03</span><span class="service-name">Motion Graphics</span><span class="service-desc">Animated logos, explainer videos, social content, and title sequences.</span><span class="service-arrow">→</span></div>
+    <div class="service-row reveal reveal-delay-3"><span class="service-num">04</span><span class="service-name">UI/UX &amp; Digital Design</span><span class="service-desc">Intuitive interfaces, prototypes, and seamless digital experiences.</span><span class="service-arrow">→</span></div>
     <div class="service-row reveal"><span class="service-num">05</span><span class="service-name">Social Media Visuals</span><span class="service-desc">Scroll-stopping content strategies, templates, and campaigns.</span><span class="service-arrow">→</span></div>
   </div>
 </section>
@@ -401,225 +341,256 @@ footer p{font-family:'Syne',sans-serif;font-size:11px;letter-spacing:2px;text-tr
 
 <footer>
   <p>© 2025 Sulagna Barik — Graphic Designer</p>
-  <p>Designed with ♥</p>
+  <p>SB_PORTFOLIO v1.0</p>
 </footer>
 
 <script>
-/* ══ Aurora ══ */
-const aC=document.getElementById('aurora-canvas');
-const ax=aC.getContext('2d');
-let mX=innerWidth/2,mY=innerHeight/2;
-const blobs=[
-  {x:400,y:300,r:340,vx:.3,vy:.2,col:'#7c3aed',op:.18,chase:true,sp:.03},
-  {x:900,y:500,r:280,vx:-.4,vy:.3,col:'#06b6d4',op:.14,chase:true,sp:.018},
-  {x:600,y:700,r:320,vx:.2,vy:-.3,col:'#ec4899',op:.13,chase:true,sp:.01},
-  {x:200,y:600,r:260,vx:.5,vy:.15,col:'#f59e0b',op:.10,chase:false},
-  {x:1100,y:200,r:300,vx:-.3,vy:.4,col:'#3b82f6',op:.09,chase:false},
-];
-function resA(){aC.width=innerWidth;aC.height=innerHeight;}
-resA();addEventListener('resize',resA);
-addEventListener('mousemove',e=>{mX=e.clientX;mY=e.clientY;});
-(function drawA(){
-  ax.clearRect(0,0,aC.width,aC.height);
-  blobs.forEach(b=>{
-    if(b.chase){b.x+=(mX-b.x)*b.sp;b.y+=(mY-b.y)*b.sp;}
-    else{b.x+=b.vx;b.y+=b.vy;if(b.x<-200||b.x>innerWidth+200)b.vx*=-1;if(b.y<-200||b.y>innerHeight+200)b.vy*=-1;}
-    const g=ax.createRadialGradient(b.x,b.y,0,b.x,b.y,b.r);
-    g.addColorStop(0,b.col+Math.floor(b.op*255).toString(16).padStart(2,'0'));
-    g.addColorStop(1,'transparent');
-    ax.beginPath();ax.arc(b.x,b.y,b.r,0,Math.PI*2);ax.fillStyle=g;ax.fill();
-  });
-  requestAnimationFrame(drawA);
+/* ════════════════════════════════
+   WEBGL — Pearl white liquid silk
+   Fewer waves, smooth slow flow
+   Mouse distorts the silk surface
+════════════════════════════════ */
+(function(){
+  const canvas=document.getElementById('gl');
+  const gl=canvas.getContext('webgl')||canvas.getContext('experimental-webgl');
+  if(!gl){canvas.style.display='none';return;}
+  function resize(){canvas.width=innerWidth;canvas.height=innerHeight;gl.viewport(0,0,innerWidth,innerHeight);}
+  resize();addEventListener('resize',resize);
+
+  const VS=`attribute vec2 a_pos;void main(){gl_Position=vec4(a_pos,0.,1.);}`;
+
+  // Pearl white liquid silk — fewer wider waves, very smooth
+  const FS=`
+    precision highp float;
+    uniform vec2  u_res;
+    uniform float u_time;
+    uniform vec2  u_mouse;
+    uniform float u_speed;
+
+    float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+    float noise(vec2 p){
+      vec2 i=floor(p),f=fract(p);
+      f=f*f*(3.-2.*f);
+      return mix(mix(hash(i),hash(i+vec2(1,0)),f.x),
+                 mix(hash(i+vec2(0,1)),hash(i+vec2(1,1)),f.x),f.y);
+    }
+    // Very smooth fbm — only 4 octaves, low frequency = fewer big waves
+    float fbm(vec2 p){
+      float v=0.,a=.5;
+      for(int i=0;i<4;i++){v+=a*noise(p);p=p*2.1+vec2(1.7,9.2);a*=.48;}
+      return v;
+    }
+
+    void main(){
+      vec2 uv=gl_FragCoord.xy/u_res;
+      uv.y=1.-uv.y;
+
+      // Mouse ripple — gentle, wide, slow
+      vec2 m=u_mouse;
+      float d=length(uv-m);
+      float ripple=u_speed*0.12*exp(-d*3.5)*sin(d*18.-u_time*4.);
+      vec2 duv=uv+normalize(uv-m+.001)*ripple;
+
+      // Two-layer domain warp — big smooth silk folds
+      vec2 q=vec2(fbm(duv*1.1+u_time*.06),
+                  fbm(duv*1.1+vec2(3.8,1.7)+u_time*.05));
+      vec2 r=vec2(fbm(duv*1.2+3.*q+u_time*.04),
+                  fbm(duv*1.2+3.*q+vec2(6.1,2.3)+u_time*.035));
+      float f=fbm(duv*0.9+3.*r);
+
+      // Pearl white / silver / very faint lavender tint palette
+      // Base: very dark near-black
+      vec3 col=vec3(0.01,0.01,0.03);
+      // Silk sheen layers — off-white/pearl
+      col=mix(col, vec3(0.55,0.52,0.65), smoothstep(0.2,0.7,f));
+      col=mix(col, vec3(0.82,0.80,0.92), smoothstep(0.45,0.75,f)*smoothstep(0.,0.6,r.x));
+      // Bright specular highlight — pure pearl white on ridges
+      col=mix(col, vec3(0.97,0.96,1.00), smoothstep(0.65,0.82,f)*0.9);
+      // Faint violet tint in valleys
+      col=mix(col, vec3(0.18,0.10,0.30), smoothstep(0.6,0.2,f)*0.35);
+      // Very subtle mouse glow — faint lilac
+      float mg=smoothstep(.5,0.,d)*(0.3+u_speed*.5);
+      col=mix(col,vec3(0.75,0.70,0.95),mg*0.18);
+
+      // Keep it darkish — it's a background
+      col*=0.80;
+      // Vignette
+      float vig=1.-dot(uv-.5,uv-.5)*1.2;
+      col*=clamp(vig,0.,1.);
+
+      gl_FragColor=vec4(col,1.);
+    }
+  `;
+
+  function compile(type,src){const s=gl.createShader(type);gl.shaderSource(s,src);gl.compileShader(s);return s;}
+  const prog=gl.createProgram();
+  gl.attachShader(prog,compile(gl.VERTEX_SHADER,VS));
+  gl.attachShader(prog,compile(gl.FRAGMENT_SHADER,FS));
+  gl.linkProgram(prog);gl.useProgram(prog);
+
+  const buf=gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER,buf);
+  gl.bufferData(gl.ARRAY_BUFFER,new Float32Array([-1,-1,1,-1,-1,1,1,1]),gl.STATIC_DRAW);
+  const loc=gl.getAttribLocation(prog,'a_pos');
+  gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
+
+  const uRes=gl.getUniformLocation(prog,'u_res');
+  const uTime=gl.getUniformLocation(prog,'u_time');
+  const uMouse=gl.getUniformLocation(prog,'u_mouse');
+  const uSpeed=gl.getUniformLocation(prog,'u_speed');
+
+  let mx=.5,my=.5,pmx=.5,pmy=.5,spd=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX/innerWidth;my=e.clientY/innerHeight;});
+  const t0=performance.now();
+  (function frame(now){
+    const t=(now-t0)*.001;
+    const dx=mx-pmx,dy=my-pmy;
+    spd+=(Math.sqrt(dx*dx+dy*dy)*55-spd)*.10;
+    pmx=mx;pmy=my;
+    gl.uniform2f(uRes,canvas.width,canvas.height);
+    gl.uniform1f(uTime,t);
+    gl.uniform2f(uMouse,mx,my);
+    gl.uniform1f(uSpeed,Math.min(spd,2.5));
+    gl.drawArrays(gl.TRIANGLE_STRIP,0,4);
+    requestAnimationFrame(frame);
+  })(t0);
 })();
 
-/* ══ Cursor ══ */
+/* ════ Cursor ════ */
 const cur=document.getElementById('cursor'),ring=document.getElementById('cursor-ring');
 let cx=0,cy=0,rx=0,ry=0;
 document.addEventListener('mousemove',e=>{cx=e.clientX;cy=e.clientY;});
-(function lp(){rx+=(cx-rx)*.12;ry+=(cy-ry)*.12;
-  cur.style.left=cx+'px';cur.style.top=cy+'px';
-  ring.style.left=rx+'px';ring.style.top=ry+'px';
-  requestAnimationFrame(lp);})();
+(function lp(){rx+=(cx-rx)*.12;ry+=(cy-ry)*.12;cur.style.left=cx+'px';cur.style.top=cy+'px';ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(lp);})();
 document.querySelectorAll('a,button,.leaf-card,.tool-card').forEach(el=>{
-  el.addEventListener('mouseenter',()=>{cur.style.width=cur.style.height='6px';ring.style.width=ring.style.height='64px';ring.style.borderColor='rgba(255,255,255,.7)';});
-  el.addEventListener('mouseleave',()=>{cur.style.width=cur.style.height='12px';ring.style.width=ring.style.height='40px';ring.style.borderColor='rgba(255,255,255,.4)';});
+  el.addEventListener('mouseenter',()=>{cur.style.width=cur.style.height='6px';ring.style.width=ring.style.height='56px';ring.style.borderColor='rgba(176,108,255,.8)';});
+  el.addEventListener('mouseleave',()=>{cur.style.width=cur.style.height='10px';ring.style.width=ring.style.height='36px';ring.style.borderColor='rgba(176,108,255,.7)';});
 });
 
-/* ══ Branch & Leaf projects ══ */
+/* ════ Branch & Leaf — 5 projects ════ */
 const projects=[
-  {tag:'Brand Identity', title:'Lumina Studio Rebrand',   desc:'Logo system, typography & full visual identity for a creative studio.',  year:'2025',accent:'#7c3aed'},
-  {tag:'Print Design',   title:'Noir Magazine Vol. 3',     desc:'Editorial layout & cover design for an independent fashion publication.',  year:'2025',accent:'#ec4899'},
-  {tag:'Motion Graphics',title:'Pulse Festival Opening',   desc:'Animated title sequence & storyboard for a music festival.',              year:'2025',accent:'#06b6d4'},
-  {tag:'UI/UX Design',   title:'Arca App Interface',       desc:'End-to-end UI design for a productivity application prototype.',          year:'2024',accent:'#f59e0b'},
-  {tag:'Packaging',      title:'Solaris Cosmetics',        desc:'Product packaging & label design for a sustainable beauty brand.',        year:'2024',accent:'#10b981'},
-  {tag:'Illustration',   title:'Mythica Book Series',      desc:'Cover illustration & interior graphics for a fantasy novel trilogy.',     year:'2024',accent:'#3b82f6'},
-  {tag:'Social Media',   title:'Vanta Brand Campaign',     desc:'Full social media kit & content strategy for a fashion label.',           year:'2024',accent:'#7c3aed'},
-  {tag:'Logo Design',    title:'Meridian Architecture',    desc:'Minimalist logo & brand guidelines for an architecture firm.',            year:'2024',accent:'#ec4899'},
-  {tag:'Editorial',      title:'The Dark Issue — Zine',    desc:'Self-initiated zine exploring dark aesthetics through type & photo.',     year:'2024',accent:'#06b6d4'},
-  {tag:'Brand Identity', title:'Nova Skincare Identity',   desc:'Soft yet modern identity system for a new skincare startup.',             year:'2024',accent:'#f59e0b'},
-  {tag:'Motion Graphics',title:'Echo Podcast Visuals',     desc:'Animated lower thirds & episode thumbnails for a design podcast.',        year:'2024',accent:'#10b981'},
-  {tag:'Poster Design',  title:'FORMA Art Exhibition',     desc:'Series of geometric posters for a contemporary art gallery.',             year:'2024',accent:'#3b82f6'},
-  {tag:'UI/UX Design',   title:'Bloom Finance App',        desc:'User research, wireframes & high-fidelity screens for a fintech app.',   year:'2024',accent:'#7c3aed'},
-  {tag:'Packaging',      title:'Terra Coffee Co.',         desc:'Earthy, tactile packaging design for an artisan coffee brand.',           year:'2024',accent:'#ec4899'},
-  {tag:'Brand Identity', title:'Onyx Record Label',        desc:'Dark, bold brand identity for an independent electronic music label.',    year:'2024',accent:'#06b6d4'},
+  {tag:'Brand Identity', title:'Lumina Studio Rebrand',  desc:'Logo system, color palette & full visual identity for a creative studio.',  year:'2025',accent:'#b06cff'},
+  {tag:'Print Design',   title:'Noir Magazine Vol. 3',    desc:'Editorial layout & cover design for an independent fashion publication.',    year:'2025',accent:'#e040fb'},
+  {tag:'Motion Graphics',title:'Pulse Festival Opening',  desc:'Animated title sequence & storyboard for a music festival event.',          year:'2025',accent:'#00e5ff'},
+  {tag:'UI/UX Design',   title:'Arca App Interface',      desc:'End-to-end UI design and prototype for a productivity application.',        year:'2024',accent:'#7c3aed'},
+  {tag:'Packaging',      title:'Solaris Cosmetics',       desc:'Product packaging & label design for a sustainable beauty brand.',          year:'2024',accent:'#d4af7a'},
 ];
 
-const N = projects.length;
-const mount  = document.getElementById('branch-mount');
-const svg    = document.getElementById('branch-svg');
-const ctr    = document.getElementById('leaf-current');
-const scroll = document.getElementById('branch-scroll');
-const sticky = document.getElementById('branch-sticky');
-
-// Build cards + dots + connector lines
-const cardEls=[], dotEls=[], lineEls=[];
+const N=projects.length;
+const mount=document.getElementById('branch-mount');
+const svg=document.getElementById('branch-svg');
+const ctr=document.getElementById('leaf-current');
+const scrollEl=document.getElementById('branch-scroll');
+const sticky=document.getElementById('branch-sticky');
+const cardEls=[],dotEls=[],lineEls=[];
 
 projects.forEach((p,i)=>{
-  const side = i%2===0 ? 'right' : 'left';
+  const side=i%2===0?'right':'left';
 
-  // card
   const card=document.createElement('div');
   card.className=`leaf-card side-${side} dim`;
-  card.style.setProperty('--leaf-accent', p.accent);
+  card.style.setProperty('--leaf-accent',p.accent);
   card.innerHTML=`
-    <div class="leaf-num">${String(i+1).padStart(2,'0')}</div>
-    <div class="leaf-tag">${p.tag}</div>
-    <div class="leaf-title">${p.title}</div>
-    <div class="leaf-desc">${p.desc}</div>
-    <div class="leaf-year">${p.year}</div>`;
-  mount.appendChild(card);
-  cardEls.push(card);
+    <div class="leaf-card-bar"></div>
+    <div class="leaf-card-corner"></div>
+    <div class="leaf-card-body">
+      <div class="leaf-num">PROJECT_${String(i+1).padStart(2,'0')}</div>
+      <div class="leaf-tag">${p.tag}</div>
+      <div class="leaf-title">${p.title}</div>
+      <div class="leaf-desc">${p.desc}</div>
+      <div class="leaf-footer">
+        <span class="leaf-year">${p.year}</span>
+        <span class="leaf-status">[ VIEW ]</span>
+      </div>
+    </div>`;
+  mount.appendChild(card);cardEls.push(card);
 
-  // stem dot
   const dot=document.createElement('div');
-  dot.className='stem-dot';
-  dot.style.setProperty('--leaf-accent', p.accent);
-  mount.appendChild(dot);
-  dotEls.push(dot);
+  dot.className='stem-dot';dot.style.setProperty('--leaf-accent',p.accent);
+  mount.appendChild(dot);dotEls.push(dot);
 
-  // connector line
   const line=document.createElement('div');
-  line.className=`stem-line side-${side}`;
-  line.style.background=p.accent;
-  mount.appendChild(line);
-  lineEls.push(line);
+  line.className=`stem-line side-${side}`;line.style.background=p.accent;
+  mount.appendChild(line);lineEls.push(line);
 });
 
-/* position everything based on viewport */
 function layoutBranch(){
-  const W=sticky.offsetWidth, H=sticky.offsetHeight;
-  const cx=W/2;
-  const totalH=H*0.82;
-  const startY=H*0.09;
-  const stepY=totalH/(N-1);
-  const cardW=cardEls[0].offsetWidth||340;
-  const gap=70; // gap between stem centre and card edge
-
-  // Draw animated SVG stem (curvy branch)
-  const scrolled=Math.max(0,-scroll.getBoundingClientRect().top);
-  const maxScroll=scroll.offsetHeight-H;
+  const W=sticky.offsetWidth,H=sticky.offsetHeight;
+  const cx=W/2,totalH=H*.76,startY=H*.12,stepY=totalH/(N-1);
+  const gap=55;
+  const scrolled=Math.max(0,-scrollEl.getBoundingClientRect().top);
+  const maxScroll=scrollEl.offsetHeight-H;
   const prog=Math.min(1,Math.max(0,scrolled/maxScroll));
 
-  // Stem path: gentle sine wave down centre
+  // SVG stem — subtle sine wiggle
   let stemD=`M ${cx} ${startY}`;
   for(let y=startY;y<=startY+totalH;y+=4){
     const t=(y-startY)/totalH;
-    const wiggle=Math.sin(t*Math.PI*5 + prog*2)*8;
-    stemD+=` L ${cx+wiggle} ${y}`;
+    const w=Math.sin(t*Math.PI*3+prog*1.2)*9;
+    stemD+=` L ${cx+w} ${y}`;
   }
-  // Draw small branch stubs to each card
-  let branchesD='';
+  let branchD='';
   projects.forEach((_,i)=>{
     const side=i%2===0?'right':'left';
     const y=startY+i*stepY;
     const t=i/(N-1);
-    const stemX=cx+Math.sin(t*Math.PI*5+prog*2)*8;
+    const sx=cx+Math.sin(t*Math.PI*3+prog*1.2)*9;
     const dir=side==='right'?1:-1;
-    const bLen=gap+cardW*0.3;
-    // Cubic bezier stub
-    branchesD+=`M ${stemX} ${y} C ${stemX+dir*bLen*0.4} ${y-10}, ${stemX+dir*bLen*0.8} ${y+10}, ${stemX+dir*bLen} ${y} `;
-  });svg.innerHTML=`
-    <path d="${stemD}" stroke="rgba(124,58,237,0.2)" stroke-width="2" fill="none"/>
-    <path d="${stemD}" stroke="rgba(6,182,212,0.08)" stroke-width="6" fill="none" stroke-dasharray="4 8"/>
-    <path d="${branchesD}" stroke="rgba(255,255,255,0.08)" stroke-width="1.5" fill="none"/>
-  `;
+    const bl=gap+90;
+    branchD+=`M ${sx} ${y} C ${sx+dir*bl*.3} ${y-10}, ${sx+dir*bl*.7} ${y+8}, ${sx+dir*bl} ${y} `;
+  });
 
-  // Position & animate each card/dot/line
-  projects.forEach((p,i)=>{
+  // Glow filter for active stem glow
+  svg.innerHTML=`
+    <defs>
+      <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <path d="${stemD}" stroke="rgba(176,108,255,0.18)" stroke-width="3" fill="none"/>
+    <path d="${stemD}" stroke="rgba(176,108,255,0.08)" stroke-width="9" fill="none" filter="url(#glow)"/>
+    <path d="${stemD}" stroke="rgba(255,255,255,0.04)" stroke-width="1" fill="none" stroke-dasharray="2 12"/>
+    <path d="${branchD}" stroke="rgba(255,255,255,0.06)" stroke-width="1.5" fill="none"/>`;
+
+  projects.forEach((_,i)=>{
     const side=i%2===0?'right':'left';
     const y=startY+i*stepY;
     const t=i/(N-1);
-    const stemX=cx+Math.sin(t*Math.PI*5+prog*2)*8;
-
-    // dot position
-    dotEls[i].style.top=(y-5)+'px';
-    dotEls[i].style.left=(stemX-5)+'px';
-    dotEls[i].style.transform='none';
-
-    // card vertical center on the dot
+    const sx=cx+Math.sin(t*Math.PI*3+prog*1.2)*9;
     const ch=cardEls[i].offsetHeight||180;
+    dotEls[i].style.top=(y-4)+'px';dotEls[i].style.left=(sx-4)+'px';dotEls[i].style.transform='none';
     cardEls[i].style.top=(y-ch/2)+'px';
-
     if(side==='right'){
-      cardEls[i].style.left=(stemX+gap)+'px';
-      cardEls[i].style.right='auto';
-      // connector line
-      lineEls[i].style.left=stemX+'px';
-      lineEls[i].style.right='auto';
-      lineEls[i].style.width=gap+'px';
-      lineEls[i].style.top=(y)+'px';
+      cardEls[i].style.left=(sx+gap)+'px';cardEls[i].style.right='auto';
+      lineEls[i].style.left=sx+'px';lineEls[i].style.right='auto';lineEls[i].style.width=gap+'px';lineEls[i].style.top=y+'px';
     } else {
-      cardEls[i].style.right=(W-stemX+gap)+'px';
-      cardEls[i].style.left='auto';
-      lineEls[i].style.right=(W-stemX)+'px';
-      lineEls[i].style.left='auto';
-      lineEls[i].style.width=gap+'px';
-      lineEls[i].style.top=(y)+'px';
+      cardEls[i].style.right=(W-sx+gap)+'px';cardEls[i].style.left='auto';
+      lineEls[i].style.right=(W-sx)+'px';lineEls[i].style.left='auto';lineEls[i].style.width=gap+'px';lineEls[i].style.top=y+'px';
     }
   });
 }
 
-/* which card is active based on scroll */
 function updateActive(){
-  const rect=scroll.getBoundingClientRect();
+  const rect=scrollEl.getBoundingClientRect();
   const scrolled=Math.max(0,-rect.top);
-  const maxScroll=scroll.offsetHeight-sticky.offsetHeight;
+  const maxScroll=scrollEl.offsetHeight-sticky.offsetHeight;
   const prog=Math.min(1,Math.max(0,scrolled/maxScroll));
-
-  // active index
-  const rawIdx=prog*(N-1);
-  const activeIdx=Math.round(rawIdx);
+  const activeIdx=Math.round(prog*(N-1));
   ctr.textContent=String(activeIdx+1).padStart(2,'0');
-
   cardEls.forEach((card,i)=>{
     card.classList.remove('dim','active','past');
-    dotEls[i].classList.remove('active');
-    lineEls[i].classList.remove('active');
-
-    if(i===activeIdx){
-      card.classList.add('active');
-      dotEls[i].classList.add('active');
-      lineEls[i].classList.add('active');
-    } else if(i<activeIdx){
-      card.classList.add('past');
-    } else {
-      card.classList.add('dim');
-    }
+    dotEls[i].classList.remove('active');lineEls[i].classList.remove('active');
+    if(i===activeIdx){card.classList.add('active');dotEls[i].classList.add('active');lineEls[i].classList.add('active');}
+    else if(i<activeIdx){card.classList.add('past');}
+    else{card.classList.add('dim');}
   });
-
   layoutBranch();
 }
 
-window.addEventListener('scroll', updateActive);
-window.addEventListener('resize', ()=>{ layoutBranch(); updateActive(); });
+window.addEventListener('scroll',updateActive);
+window.addEventListener('resize',()=>{layoutBranch();updateActive();});
+layoutBranch();updateActive();
 
-// init
-layoutBranch();
-updateActive();
-
-/* ══ Reveal ══ */
+/* Reveal */
 document.querySelectorAll('.reveal').forEach(el=>{
-  new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('visible');},{threshold:.12}).observe(el);
+  new IntersectionObserver(([e])=>{if(e.isIntersecting)el.classList.add('visible');},{threshold:.1}).observe(el);
 });
 </script>
 </body>
